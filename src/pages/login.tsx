@@ -14,12 +14,15 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Form submitted, isSignUp:', isSignUp)
     setLoading(true)
     setError(null)
 
     try {
       if (isSignUp) {
+        console.log('Attempting signup...')
         const { error } = await supabase.auth.signUp({ email, password })
+        console.log('Signup response error:', error)
         if (error) throw error
         router.push('/dashboard')
       } else {
