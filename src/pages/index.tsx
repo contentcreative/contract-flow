@@ -142,6 +142,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-xl mb-2">Professional</h3>
               <div className="text-4xl font-bold mb-4">$9<span className="text-base font-normal text-gray-500">/mo</span></div>
+              <p className="text-sm text-gray-500 mb-4">(Also available in GBP & EUR)</p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> Unlimited contracts</li>
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> All 5 contract types</li>
