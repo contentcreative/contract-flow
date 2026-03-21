@@ -36,7 +36,7 @@ export async function generateContract(
       'X-Title': 'ContractFlow'
     },
     body: JSON.stringify({
-      model: 'anthropic/claude-3-haiku',
+      model: 'anthropic/claude-3.5-sonnet',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
@@ -120,7 +120,7 @@ export async function quickGenerate(
       'X-Title': 'ContractFlow'
     },
     body: JSON.stringify({
-      model: 'anthropic/claude-3-haiku',
+      model: 'anthropic/claude-3.5-sonnet',
       messages: [
         { role: 'system', content: promptConfig.system },
         { role: 'user', content: userPrompt }
@@ -165,7 +165,7 @@ export function estimateCost(contractType: string): { tokens: number; cost: stri
   }
   
   const tokens = estimatedTokens[contractType as keyof typeof estimatedTokens] || 2000
-  const costUSD = (tokens / 1000000) * 0.1 // Approximate cost for Claude 3 Haiku
+  const costUSD = (tokens / 1000000) * 3 // Claude 3.5 Sonnet: $3 per million input tokens
   const costGBP = (costUSD * 0.79).toFixed(4)
   
   return {
