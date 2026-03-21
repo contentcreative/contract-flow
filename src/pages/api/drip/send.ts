@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Skip if user is already Pro
       const { data: profile } = await supabase
         .from('profiles')
-        .select('subscription_status')
+        .select('subscription_status, full_name')
         .eq('id', email.user_id)
         .single()
 
@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Send the email
-      const recipientName = profile?.full_name || email.profiles?.full_name
+      const recipientName = profile?.full_name || email.profiles?.full_name || undefined
       const sendResult = await sendDripEmail(email.email_type as any, {
         to: email.profiles?.email,
         recipientName
