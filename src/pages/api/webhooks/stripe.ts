@@ -58,8 +58,23 @@ export default async function handler(
         const customerId = session.customer as string
         const subscriptionId = session.subscription as string
 
-        // Update user's subscription status
-        if (customerId) {
+        // Check if this is an invoice payment (has invoice_id metadata)
+        if (session.metadata?.invoice_id) {
+          // Mark invoice as paid
+          await supabase
+            .from('invoices')
+            .update({
+              status: 'paid',
+              paid_at: new Date().toISOString(),
+              stripe_payment_intent_id: session.payment_intent,
+              stripe_session_id: session.id
+            })
+            .eq('id', session.metadata.invoice_id)
+          
+          console.log(`Invoice ${session.metadata.invoice_id} marked as paid`)
+        }
+        // Otherwise handle subscription
+        else if (customerId) {
           const { data: user } = await supabase
             .from('profiles')
             .select('id')
@@ -140,6 +155,24 @@ export default async function handler(
         const invoice = event.data.object
         const customerId = invoice.customer as string
         console.log(`Payment failed for customer ${customerId}`)
+        break
+      }
+
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object
+        // Check if this is for an invoice
+        if (paymentIntent.metadata?.invoice_id) {
+          await supabase
+            .from('invoices')
+            .update({
+              status: 'paid',
+              paid_at: new Date().toISOString(),
+              stripe_payment_intent_id: paymentIntent.id
+            })
+            .eq('id', paymentIntent.metadata.invoice_id)
+          
+          console.log(`Payment intent succeeded for invoice ${paymentIntent.metadata.invoice_id}`)
+        }
         break
       }
 
