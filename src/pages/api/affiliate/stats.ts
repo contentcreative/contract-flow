@@ -1,8 +1,18 @@
 // API: Get affiliate stats
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 
-const supabase = createClientComponentClient()
+const createServerSupabaseClient = (cookieStore: any) => {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value },
+      },
+    }
+  )
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -10,6 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    const supabase = createServerSupabaseClient(req.cookies as any)
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
