@@ -133,6 +133,145 @@ export default function Dashboard() {
     router.push('/')
   }
 
+  const handleCancelSubscription = async () => {
+    if (!confirm('Are you sure you want to cancel your subscription? You will be downgraded to the free plan.')) return
+    
+    try {
+      const response = await fetch('/api/create-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Error opening subscription management: ' + (data.error || 'Unknown error'))
+      }
+    } catch (error) {
+      alert('Error: ' + error)
+    }
+  }
+
+  const handleRequestSignature = async (email: string) => {
+    if (!selectedContract || !email) return
+    
+    try {
+      const response = await fetch('/api/signatures/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contract_id: selectedContract.id,
+          signer_email: email,
+          signer_name: email.split('@')[0]
+        })
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('Signature request sent to ' + email + '!')
+        // Refresh contract data
+        setSelectedContract(prev => prev ? { ...prev, signature_status: 'awaiting_signature' } : null)
+      } else {
+        alert('Error: ' + (data.error || 'Failed to send signature request'))
+      }
+    } catch (error) {
+      alert('Error: ' + error)
+    }
+  }
+
+  const handleResendSignature = async () => {
+    if (!selectedContract) return
+    
+    try {
+      const response = await fetch('/api/signatures/resend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contract_id: selectedContract.id
+        })
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('Reminder sent!')
+      } else {
+        alert('Error: ' + (data.error || 'Failed to send reminder'))
+      }
+    } catch (error) {
+      alert('Error: ' + error)
+    }
+  }
+
+  const handleDuplicateContract = async () => {
+    if (!selectedContract) return
+    
+    try {
+      const response = await fetch('/api/contracts/duplicate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          original_contract_id: selectedContract.id,
+          user_id: user.id
+        })
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('Contract duplicated successfully!')
+        setShowContractModal(false)
+        // Refresh contracts list
+        const contractsRes = await fetch('/api/get-contracts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id })
+        })
+        const contractsResult = await contractsRes.json()
+        if (contractsResult.success && contractsResult.data) {
+          setContracts(contractsResult.data)
+        }
+      } else {
+        alert('Error: ' + (data.error || 'Failed to duplicate contract'))
+      }
+    } catch (error) {
+      alert('Error: ' + error)
+    }
+  }
+
+  const handleRestoreVersion = async (version: number) => {
+    if (!selectedContract) return
+    
+    try {
+      const response = await fetch('/api/contracts/restore-version', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contract_id: selectedContract.id,
+          version: version
+        })
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('Contract restored to version ' + version + '!')
+        setShowContractModal(false)
+        // Refresh contracts
+        const contractsRes = await fetch('/api/get-contracts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id })
+        })
+        const contractsResult = await contractsRes.json()
+        if (contractsResult.success && contractsResult.data) {
+          setContracts(contractsResult.data)
+        }
+      } else {
+        alert('Error: ' + (data.error || 'Failed to restore version'))
+      }
+    } catch (error) {
+      alert('Error: ' + error)
+    }
+  }
+
   const handleUpgrade = async () => {
     if (!user) return
     setCheckingOut(true)
@@ -491,7 +630,10 @@ export default function Dashboard() {
                     {plan === 'pro' ? `Pro - ${selectedCurrency === 'GBP' ? '£12' : selectedCurrency === 'USD' ? '$15' : '€14'}/mo` : 'Free - 2 contracts/mo'}
                   </div>
                   {plan === 'pro' && (
-                    <button className="mt-3 w-full p-3 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 text-sm">
+                    <button 
+                      onClick={handleCancelSubscription}
+                      className="mt-3 w-full p-3 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 text-sm"
+                    >
                       Cancel Subscription
                     </button>
                   )}
@@ -541,7 +683,7 @@ export default function Dashboard() {
                   <button 
                     onClick={() => {
                       const email = prompt("Enter client's email address for signature request:")
-                      if (email) alert(`Signature request sent to ${email}`)
+                      if (email) handleRequestSignature(email)
                     }}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 flex items-center gap-2"
                   >
@@ -549,21 +691,7 @@ export default function Dashboard() {
                   </button>
                   
                   <button 
-                    onClick={() => {
-                      if (confirm('Create a duplicate of this contract?')) {
-                        fetch('/api/contracts/duplicate', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            original_contract_id: selectedContract.id,
-                            user_id: user.id
-                          })
-                        }).then(res => res.json()).then(data => {
-                          if (data.success) alert('Contract duplicated!')
-                          setShowContractModal(false)
-                        })
-                      }
-                    }}
+                    onClick={handleDuplicateContract}
                     className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2"
                   >
                     <Copy className="w-4 h-4" /> Duplicate
@@ -583,7 +711,9 @@ export default function Dashboard() {
                     onClick={() => {
                       if (selectedContract.version > 1) {
                         const version = prompt(`Enter version number to restore (1-${selectedContract.version}):`)
-                        if (version) alert(`Would restore to version ${version}`)
+                        if (version && !isNaN(parseInt(version))) {
+                          handleRestoreVersion(parseInt(version))
+                        }
                       } else {
                         alert('No previous versions available')
                       }
@@ -604,7 +734,10 @@ export default function Dashboard() {
                   ) : selectedContract.signature_status === 'awaiting_signature' ? (
                     <div className="space-y-3">
                       <p className="text-sm text-blue-700">Signature request has been sent. Waiting for client to sign.</p>
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                      <button 
+                        onClick={handleResendSignature}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                      >
                         Resend Request
                       </button>
                     </div>
@@ -614,7 +747,7 @@ export default function Dashboard() {
                       <button 
                         onClick={() => {
                           const email = prompt("Enter client's email address:")
-                          if (email) alert(`Signature request sent to ${email}. They will receive a link to sign.`)
+                          if (email) handleRequestSignature(email)
                         }}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 flex items-center gap-2"
                       >
