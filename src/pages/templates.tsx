@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Plus, FileText, Trash2, Star, Copy, ArrowLeft, X, Check } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 type Template = {
   id: string
