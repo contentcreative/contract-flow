@@ -26,13 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Get due emails
     const { data: dueEmails, error } = await supabase
       .from('email_queue')
-      .select(`
-        id,
-        user_id,
-        email_type,
-        scheduled_for,
-        profiles!inner(email, full_name)
-      `)
+      .select('id, user_id, email_type, scheduled_for')
       .eq('status', 'pending')
       .lte('scheduled_for', new Date().toISOString())
       .limit(20)
@@ -51,15 +45,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     for (const email of dueEmails || []) {
       results.processed++
 
-      // Skip if user is already Pro
+      // Get user profile
       const { data: profile } = await supabase
         .from('profiles')
-        .select('subscription_status, full_name')
+        .select('email, full_name, subscription_status')
         .eq('id', email.user_id)
         .single()
 
+      // Skip if user is already Pro
       if (profile?.subscription_status === 'pro') {
-        // Mark as skipped - user upgraded
         await supabase
           .from('email_queue')
           .update({ status: 'skipped', error_message: 'User upgraded to Pro' })
@@ -69,9 +63,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Send the email
-      const recipientName = profile?.full_name || email.profiles?.full_name || undefined
+      const recipientName = profile?.full_name || undefined
       const sendResult = await sendDripEmail(email.email_type as any, {
-        to: email.profiles?.email,
+        to: profile?.email,
         recipientName
       })
 
