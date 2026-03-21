@@ -9,11 +9,35 @@ interface UpgradeModalProps {
 }
 
 type BillingPeriod = 'monthly' | 'annual'
+type Currency = 'GBP' | 'EUR' | 'USD'
+
+// Stripe Price IDs
+const PRICE_IDS: Record<Currency, Record<BillingPeriod, string>> = {
+  GBP: {
+    monthly: 'price_1TDQSO6xVWAQY92b0nIT94Wt',
+    annual: 'price_1TDQP26xVWAQY92bnEjDN4oT'
+  },
+  EUR: {
+    monthly: 'price_1TDQSu6xVWAQY92btFfaE50e',
+    annual: 'price_1TDQRr6xVWAQY92bEhqG1K2u'
+  },
+  USD: {
+    monthly: 'price_1TDQSd6xVWAQY92bhZXKzjfV',
+    annual: 'price_1TDQR26xVWAQY92b7wFE1i7N'
+  }
+}
+
+const PRICES: Record<Currency, { monthly: number; annual: number; symbol: string }> = {
+  GBP: { monthly: 12, annual: 120, symbol: '£' },
+  EUR: { monthly: 14, annual: 140, symbol: '€' },
+  USD: { monthly: 15, annual: 150, symbol: '$' }
+}
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly')
+  const [currency, setCurrency] = useState<Currency>('GBP')
 
   useEffect(() => {
     const getUser = async () => {
@@ -23,7 +47,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
     if (isOpen) getUser()
   }, [isOpen])
 
-  const handleUpgrade = async (priceId: string) => {
+  const handleUpgrade = async () => {
     if (!user) return
     setLoading(true)
     try {
@@ -33,7 +57,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         body: JSON.stringify({ 
           user_id: user.id,
           user_email: user.email,
-          price_id: priceId
+          price_id: PRICE_IDS[currency][billingPeriod]
         })
       })
       const data = await response.json()
@@ -73,9 +97,8 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
   if (!isOpen) return null
 
-  const monthlyPrice = 12
-  const annualPrice = 120
-  const savings = Math.round((1 - (annualPrice / (monthlyPrice * 12))) * 100)
+  const symbol = PRICES[currency].symbol
+  const savings = Math.round((1 - (PRICES[currency].annual / (PRICES[currency].monthly * 12))) * 100)
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -98,6 +121,26 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Content */}
         <div className="p-6">
+          {/* Currency Selector */}
+          <div className="flex justify-center mb-6">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-500">Currency:</span>
+              {(['GBP', 'EUR', 'USD'] as Currency[]).map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCurrency(c)}
+                  className={`px-3 py-1 rounded-lg font-medium transition-all ${
+                    currency === c 
+                      ? 'bg-gray-900 text-white' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Billing Period Toggle */}
           <div className="flex justify-center mb-8">
             <div className="bg-gray-100 p-1 rounded-xl inline-flex">
@@ -168,12 +211,13 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               </div>
               
               <h3 className="font-bold text-lg mb-2">Pro</h3>
+              const symbol = PRICES[currency].symbol
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-3xl font-bold">£{billingPeriod === 'monthly' ? '12' : '10'}</span>
+                <span className="text-3xl font-bold">{symbol}{billingPeriod === 'monthly' ? PRICES[currency].monthly : Math.round(PRICES[currency].annual / 12)}</span>
                 <span className="text-gray-500">/mo</span>
               </div>
               {billingPeriod === 'annual' && (
-                <p className="text-sm text-green-600 mb-4">Billed £120 yearly</p>
+                <p className="text-sm text-green-600 mb-4">Billed {symbol}{PRICES[currency].annual} yearly</p>
               )}
               
               <ul className="space-y-3 mb-6">
@@ -198,7 +242,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               </ul>
 
               <button
-                onClick={() => handleUpgrade(billingPeriod === 'monthly' ? 'price_pro_monthly' : 'price_pro_annual')}
+                onClick={handleUpgrade}
                 disabled={loading}
                 className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
