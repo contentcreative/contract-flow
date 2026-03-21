@@ -62,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       after_completion: {
         type: 'redirect',
         redirect: {
-          return_url: `${appUrl}/invoices/${invoice_id}?status=paid`,
+          url: `${appUrl}/dashboard`,
         },
       },
       metadata: {
