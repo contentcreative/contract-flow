@@ -14,6 +14,7 @@ export const PLANS = {
     name: 'Starter',
     price: 0,
     priceId: null,
+    currency: 'gbp',
     features: [
       '2 contracts per month',
       'All 5 contract types',
@@ -25,23 +26,60 @@ export const PLANS = {
       aiGenerations: 2,
     }
   },
-  professional: {
-    id: 'professional',
-    name: 'Professional',
-    price: 9, // £9/month
-    priceId: process.env.STRIPE_PRICE_ID_PRO || 'price_pro_monthly',
+  pro_monthly: {
+    id: 'pro_monthly',
+    name: 'Pro Monthly',
+    price: 12, // £12/month
+    priceId: process.env.STRIPE_PRICE_ID_PRO_MONTHLY || 'price_pro_monthly',
     currency: 'gbp',
+    interval: 'month' as const,
     features: [
       'Unlimited contracts',
-      'All 5 contract types',
       'AI-powered generation',
       'Google Docs export',
       'E-signature links',
       'Priority support',
     ],
     limits: {
-      contractsPerMonth: -1, // unlimited
-      aiGenerations: -1, // unlimited
+      contractsPerMonth: -1,
+      aiGenerations: -1,
+    }
+  },
+  pro_annual: {
+    id: 'pro_annual',
+    name: 'Pro Annual',
+    price: 120, // £120/year (2 months free)
+    priceId: process.env.STRIPE_PRICE_ID_PRO_ANNUAL || 'price_pro_annual',
+    currency: 'gbp',
+    interval: 'year' as const,
+    savings: 17, // 17% savings
+    features: [
+      'Unlimited contracts',
+      'AI-powered generation',
+      'Google Docs export',
+      'E-signature links',
+      'Priority support',
+      '2 months free',
+    ],
+    limits: {
+      contractsPerMonth: -1,
+      aiGenerations: -1,
+    }
+  },
+  trial: {
+    id: 'trial',
+    name: '7-Day Trial',
+    price: 0,
+    priceId: null,
+    currency: 'gbp',
+    features: [
+      'Full Pro access',
+      '7 days unlimited',
+      'No commitment',
+    ],
+    limits: {
+      contractsPerMonth: -1,
+      aiGenerations: -1,
     }
   }
 }
@@ -49,6 +87,7 @@ export const PLANS = {
 // Create checkout session for Pro subscription
 export async function createCheckoutSession(
   customerId: string,
+  priceId: string,
   successUrl: string,
   cancelUrl: string
 ) {
@@ -57,7 +96,7 @@ export async function createCheckoutSession(
     payment_method_types: ['card'],
     line_items: [
       {
-        price: PLANS.professional.priceId,
+        price: priceId,
         quantity: 1,
       },
     ],
@@ -87,7 +126,6 @@ export async function createCustomer(email: string, name?: string) {
 
 // Get customer's Stripe customer ID
 export async function getOrCreateCustomer(email: string, name?: string): Promise<string> {
-  // Search for existing customer
   const existing = await stripe.customers.list({
     email,
     limit: 1,
@@ -97,7 +135,6 @@ export async function getOrCreateCustomer(email: string, name?: string): Promise
     return existing.data[0].id
   }
 
-  // Create new customer
   const customer = await createCustomer(email, name)
   return customer.id
 }
@@ -135,7 +172,7 @@ export async function cancelSubscription(subscriptionId: string) {
   return await stripe.subscriptions.cancel(subscriptionId)
 }
 
-// Create billing portal session (for customers to manage their subscription)
+// Create billing portal session
 export async function createPortalSession(customerId: string, returnUrl: string) {
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
