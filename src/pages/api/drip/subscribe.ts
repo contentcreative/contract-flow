@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (error) {
       // If function doesn't exist, insert directly
-      const { data: newItem, insertError } = await supabase
+      const { data: newItem, error: insertError } = await supabase
         .from('email_queue')
         .insert({
           user_id,
