@@ -491,49 +491,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Upgrade Modal */}
-        {showUpgradeModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">Upgrade to Pro</h2>
-                <button onClick={() => setShowUpgradeModal(false)} className="text-gray-400 hover:text-gray-600">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="text-center py-4">
-                <div className="text-4xl font-bold mb-2">
-                  {selectedCurrency === 'GBP' ? '£9' : selectedCurrency === 'USD' ? '$9' : '€9'}
-                  <span className="text-lg text-gray-500">/mo</span>
-                </div>
-                <p className="text-gray-500">Billed monthly. Cancel anytime.</p>
-              </div>
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 text-sm">
-                  <Check className="w-5 h-5 text-green-600" /> Unlimited contracts
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Check className="w-5 h-5 text-green-600" /> AI-powered customization
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Check className="w-5 h-5 text-green-600" /> Google Docs export
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Check className="w-5 h-5 text-green-600" /> Priority support
-                </div>
-              </div>
-              <button 
-                onClick={handleUpgrade}
-                disabled={checkingOut}
-                className="w-full py-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {checkingOut ? 'Redirecting to Stripe...' : <>Upgrade Now</>}
-              </button>
-              <p className="text-center text-xs text-gray-500 mt-4">Use card 4242 4242 4242 4242 for testing</p>
-            </div>
-          </div>
-        )}
-
         {/* Contract View Modal */}
         {showContractModal && selectedContract && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">

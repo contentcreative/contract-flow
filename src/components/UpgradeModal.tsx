@@ -1,6 +1,7 @@
 // Upgrade Modal Component
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Check, Zap } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 interface UpgradeModalProps {
   isOpen: boolean
@@ -9,13 +10,28 @@ interface UpgradeModalProps {
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    if (isOpen) getUser()
+  }, [isOpen])
 
   const handleUpgrade = async () => {
+    if (!user) return
     setLoading(true)
     try {
-      const response = await fetch('/api/checkout', {
+      const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          user_id: user.id,
+          user_email: user.email,
+          price_id: 'price_1TCjOh6xVWAQY92bSZOQbedh' // GBP price
+        })
       })
       const data = await response.json()
       if (data.url) {
