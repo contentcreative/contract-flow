@@ -1,15 +1,64 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
-import { Check, FileText, Shield, Zap, ArrowRight, Menu, X } from 'lucide-react'
+import { Check, FileText, Shield, Zap, ArrowRight, Menu, X, Globe } from 'lucide-react'
+
+type Currency = 'GBP' | 'EUR' | 'USD'
+
+const PRICING = {
+  GBP: { monthly: 12, annual: 120, symbol: '£' },
+  EUR: { monthly: 14, annual: 140, symbol: '€' },
+  USD: { monthly: 15, annual: 150, symbol: '$' }
+}
+
+const COUNTRY_CURRENCY: Record<string, Currency> = {
+  // UK
+  GB: 'GBP',
+  // EU countries
+  DE: 'EUR', FR: 'EUR', ES: 'EUR', IT: 'EUR', NL: 'EUR', BE: 'EUR', AT: 'EUR', PT: 'EUR', PL: 'EUR', CZ: 'EUR', SE: 'EUR', DK: 'EUR', FI: 'EUR', IE: 'EUR', GR: 'EUR', HU: 'EUR', RO: 'EUR', BG: 'EUR', SK: 'EUR', HR: 'EUR', SI: 'EUR', LT: 'EUR', LV: 'EUR', EE: 'EUR', LU: 'EUR', MT: 'EUR', CY: 'EUR',
+  // US
+  US: 'USD',
+  // Other countries
+  CA: 'USD', AU: 'USD', NZ: 'USD', SG: 'USD', HK: 'USD', JP: 'USD', CH: 'USD', NO: 'USD', IS: 'USD', LI: 'USD'
+}
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [modalPlan, setModalPlan] = useState<'starter' | 'pro'>('starter')
+  const [currency, setCurrency] = useState<Currency>('GBP')
+  const [detecting, setDetecting] = useState(true)
+
+  useEffect(() => {
+    // Detect currency based on location
+    const detectCurrency = async () => {
+      try {
+        // Try to get country from Vercel/Edge headers
+        const response = await fetch('/api/geo/detect')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.country && COUNTRY_CURRENCY[data.country]) {
+            setCurrency(COUNTRY_CURRENCY[data.country])
+          }
+        }
+      } catch (e) {
+        // Fallback to browser locale
+        const browserLang = navigator.language || 'en-US'
+        if (browserLang.includes('GB')) setCurrency('GBP')
+        else if (browserLang.includes('EUR')) setCurrency('EUR')
+        else if (browserLang.includes('US')) setCurrency('USD')
+        // Default stays as GBP
+      } finally {
+        setDetecting(false)
+      }
+    }
+    detectCurrency()
+  }, [])
 
   const openModal = (plan: 'starter' | 'pro') => {
     setModalPlan(plan)
     setShowModal(true)
   }
+
+  const price = PRICING[currency]
 
   return (
     <>
@@ -28,7 +77,21 @@ export default function Home() {
             <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
             <a href="#faq" className="text-gray-600 hover:text-gray-900">FAQ</a>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            {/* Currency Selector */}
+            <div className="flex items-center gap-1 text-sm">
+              <Globe className="w-4 h-4 text-gray-400" />
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value as Currency)}
+                className="bg-transparent font-medium text-gray-700 cursor-pointer"
+              >
+                <option value="GBP">£ GBP</option>
+                <option value="EUR">€ EUR</option>
+                <option value="USD">$ USD</option>
+              </select>
+              {detecting && <span className="text-xs text-gray-400">...</span>}
+            </div>
             <a href="/login" className="text-gray-600 hover:text-gray-900">Sign In</a>
             <a href="#pricing" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700">
               Get Started
@@ -58,75 +121,49 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Problem */}
-      <section className="bg-gray-50 py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Sound Familiar?</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="text-3xl mb-4">⏱</div>
-              <h3 className="font-semibold text-lg mb-2">Hours of Copy-Paste</h3>
-              <p className="text-gray-600">Spending 2-4 hours tweaking generic templates for every new client. Your time is money.</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="text-3xl mb-4">⚖️</div>
-              <h3 className="font-semibold text-lg mb-2">Legal Uncertainty</h3>
-              <p className="text-gray-600">Not sure if your contract actually protects you. One bad client could cost you everything.</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="text-3xl mb-4">😰</div>
-              <h3 className="font-semibold text-lg mb-2">Client Pushback</h3>
-              <p className="text-gray-600">Contracts feel adversarial. Good clients get nervous. You lose momentum before you start.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Features */}
-      <section id="features" className="py-16">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Meet ContractFlow</h2>
-          <div className="space-y-8">
-            <div className="flex gap-6 items-start">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Zap className="w-6 h-6 text-green-600" />
+      <section id="features" className="py-16 px-4 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Everything you need to close deals</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-2xl shadow-sm">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                <Zap className="w-6 h-6 text-blue-600" />
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">AI-Powered Customization</h3>
-                <p className="text-gray-600">Answer a few questions about your client and project. Our AI generates a tailored contract in under 2 minutes.</p>
-              </div>
+              <h3 className="font-semibold text-xl mb-3">AI-Powered Generation</h3>
+              <p className="text-gray-600">Describe your project and let AI generate a professional contract in seconds.</p>
             </div>
-            <div className="flex gap-6 items-start">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-blue-600" />
+            <div className="bg-white p-8 rounded-2xl shadow-sm">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                <FileText className="w-6 h-6 text-green-600" />
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Plain Language</h3>
-                <p className="text-gray-600">Contracts clients actually understand. No legalese. No intimidation. Just clear terms.</p>
-              </div>
+              <h3 className="font-semibold text-xl mb-3">Plain English</h3>
+              <p className="text-gray-600">Contracts written in clear, simple language. No legal jargon for your clients to decipher.</p>
             </div>
-            <div className="flex gap-6 items-start">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="bg-white p-8 rounded-2xl shadow-sm">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
                 <Shield className="w-6 h-6 text-purple-600" />
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Protective & Professional</h3>
-                <p className="text-gray-600">Built by legal experts, refined for freelancers. Payment protection, IP clauses, termination rights.</p>
-              </div>
+              <h3 className="font-semibold text-xl mb-3">Legally Sound</h3>
+              <p className="text-gray-600">Built by legal professionals with standard protections for freelancers and consultants.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="bg-gray-50 py-16">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
-          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <div className="bg-white p-8 rounded-2xl shadow-sm">
+      <section id="pricing" className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-4">Simple, transparent pricing</h2>
+          <p className="text-gray-600 text-center mb-12">Choose the plan that works for you</p>
+          
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Starter */}
+            <div className="border-2 border-gray-200 rounded-2xl p-8">
               <h3 className="font-semibold text-xl mb-2">Starter</h3>
-              <div className="text-4xl font-bold mb-4">$0<span className="text-base font-normal text-gray-500">/mo</span></div>
-              <ul className="space-y-3 mb-6">
+              <div className="text-4xl font-bold mb-4">Free</div>
+              <p className="text-gray-500 mb-6">Perfect for getting started</p>
+              <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> 2 contracts per month</li>
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> All 5 contract types</li>
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> PDF export</li>
@@ -136,95 +173,59 @@ export default function Home() {
                 Get Started Free
               </button>
             </div>
+
+            {/* Professional */}
             <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-blue-600 relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
                 Most Popular
               </div>
               <h3 className="font-semibold text-xl mb-2">Professional</h3>
-              <div className="text-4xl font-bold mb-4">$15<span className="text-base font-normal text-gray-500">/mo</span></div>
-              <p className="text-sm text-gray-500 mb-4">(Also available in GBP & EUR)</p>
-              <ul className="space-y-3 mb-6">
+              <div className="text-4xl font-bold mb-4">{price.symbol}{price.monthly}<span className="text-base font-normal text-gray-500">/mo</span></div>
+              <p className="text-sm text-gray-500 mb-6">Everything you need to scale</p>
+              <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> Unlimited contracts</li>
-                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> All 5 contract types</li>
-                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> AI customization</li>
+                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> AI-powered generation</li>
+                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> All contract types</li>
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> Google Docs export</li>
-                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> E-signature link</li>
+                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> E-signature workflow</li>
+                <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> Priority support</li>
               </ul>
               <button onClick={() => openModal('pro')} className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">
                 Start Free Trial
               </button>
+              <p className="mt-3 text-xs text-center text-gray-500">7-day free trial • No credit card required</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-16">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            <div className="border-b border-gray-100 pb-6">
-              <h3 className="font-semibold text-lg mb-2">Are these contracts legally binding?</h3>
-              <p className="text-gray-600">Our templates are drafted by legal professionals and designed to be enforceable. However, we recommend having a lawyer review for high-stakes engagements.</p>
-            </div>
-            <div className="border-b border-gray-100 pb-6">
-              <h3 className="font-semibold text-lg mb-2">Can I customize the contracts?</h3>
-              <p className="text-gray-600">Absolutely. Our AI asks you questions about your client and project, then generates a contract tailored to your specific situation.</p>
-            </div>
-            <div className="border-b border-gray-100 pb-6">
-              <h3 className="font-semibold text-lg mb-2">What contract types are included?</h3>
-              <p className="text-gray-600">Master Service Agreement, Statement of Work, Non-Disclosure Agreement, Independent Contractor Agreement, and Consulting Agreement.</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Can I cancel anytime?</h3>
-              <p className="text-gray-600">Yes. No contracts (pun intended). Cancel from your dashboard at any time.</p>
-            </div>
+      <section id="faq" className="py-16 px-4 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Frequently asked questions</h2>
+          <div className="space-y-4">
+            {[
+              { q: 'Can I cancel anytime?', a: 'Yes, you can cancel your subscription at any time. No cancellation fees.' },
+              { q: 'What contract types are included?', a: 'We support MSA, SOW, NDA, Freelance, and Consulting agreements. More templates coming soon.' },
+              { q: 'Is the AI contract legally binding?', a: 'Our contracts are designed to be legally sound for business-to-business transactions. We recommend legal review for high-stakes agreements.' },
+              { q: 'Do I need a credit card for the trial?', a: 'No, our 7-day trial is completely free with no credit card required.' },
+            ].map((faq, i) => (
+              <div key={i} className="bg-white p-6 rounded-xl">
+                <h3 className="font-medium mb-2">{faq.q}</h3>
+                <p className="text-gray-600">{faq.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <div className="font-bold text-xl text-white mb-4">ContractFlow</div>
-          <p className="mb-4">AI-powered contracts for freelancers and consultants.</p>
-          <div className="flex justify-center gap-6 text-sm">
-            <a href="#" className="hover:text-white">Privacy</a>
-            <a href="#" className="hover:text-white">Terms</a>
-            <a href="#" className="hover:text-white">Contact</a>
-          </div>
-          <p className="mt-8 text-sm">© 2026 ContractFlow. All rights reserved.</p>
+      <footer className="py-8 px-4 border-t">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="font-bold">ContractFlow</div>
+          <p className="text-sm text-gray-500">© 2024 ContractFlow. All rights reserved.</p>
         </div>
       </footer>
-
-      {/* Signup Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-8 relative">
-            <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-              <X className="w-6 h-6" />
-            </button>
-            <h2 className="text-2xl font-bold mb-2">
-              {modalPlan === 'pro' ? 'Start Your 14-Day Free Trial' : 'Get Started Free'}
-            </h2>
-            <p className="text-gray-600 mb-6">Create your account to start generating contracts.</p>
-            <form>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Email Address</label>
-                <input type="email" className="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="you@example.com" />
-              </div>
-              <div className="mb-6">
-                <label className="block text-sm font-medium mb-2">Password</label>
-                <input type="password" className="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="Create a password" />
-              </div>
-              <button type="submit" className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">
-                Create Account
-              </button>
-            </form>
-            <p className="mt-4 text-xs text-gray-500 text-center">By signing up, you agree to our Terms of Service.</p>
-          </div>
-        </div>
-      )}
     </>
   )
 }
