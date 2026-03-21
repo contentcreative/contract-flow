@@ -1,93 +1,142 @@
-import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
+// API: Stripe Webhook Handler
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { constructEvent, stripe } from '@/lib/stripe'
+import { supabase } from '@/lib/supabase'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-01-27.acacia' as any
-})
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
-
-export default async function handler(req: any, res: any) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const sig = req.headers['stripe-signature']
+  const signature = req.headers['stripe-signature']
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+
+  if (!signature || !webhookSecret) {
+    return res.status(400).json({ error: 'Missing signature or webhook secret' })
+  }
 
   let event
 
   try {
-    if (webhookSecret && sig) {
-      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret)
-    } else {
-      event = req.body
-    }
+    event = constructEvent(req.body, signature, webhookSecret)
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message)
-    return res.status(400).json({ error: `Webhook Error: ${err.message}` })
+    return res.status(400).json({ error: 'Invalid signature' })
   }
 
-  // Handle the event
-  switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object
-      const userId = session.metadata?.user_id
-      
-      if (userId) {
-        // Update user subscription status to 'pro'
-        await supabase
-          .from('profiles')
-          .update({ 
-            subscription_status: 'pro',
-            subscription_id: session.subscription
-          })
-          .eq('id', userId)
-        
-        console.log(`User ${userId} upgraded to Pro`)
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object
+        const customerId = session.customer as string
+        const subscriptionId = session.subscription as string
+
+        // Update user's subscription status
+        if (customerId) {
+          const { data: user } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('stripe_customer_id', customerId)
+            .single()
+
+          if (user) {
+            await supabase
+              .from('profiles')
+              .update({
+                subscription_status: 'pro',
+                stripe_subscription_id: subscriptionId,
+                subscription_start: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', user.id)
+
+            console.log(`User ${user.id} upgraded to Pro`)
+          }
+        }
+        break
       }
-      break
-    }
 
-    case 'customer.subscription.deleted': {
-      const subscription = event.data.object
-      const customerId = subscription.customer
-      
-      // Find user by Stripe customer ID and downgrade to free
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('subscription_id', customerId)
-      
-      if (profiles && profiles.length > 0) {
-        await supabase
-          .from('profiles')
-          .update({ 
-            subscription_status: 'free',
-            subscription_id: null
-          })
-          .eq('id', profiles[0].id)
-        
-        console.log(`User ${profiles[0].id} subscription cancelled`)
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object
+        const customerId = subscription.customer as string
+        const status = subscription.status
+
+        // Update user's subscription status
+        if (customerId) {
+          const { data: user } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('stripe_customer_id', customerId)
+            .single()
+
+          if (user) {
+            await supabase
+              .from('profiles')
+              .update({
+                subscription_status: status === 'active' ? 'pro' : status,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', user.id)
+          }
+        }
+        break
       }
-      break
+
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object
+        const customerId = subscription.customer as string
+
+        // Downgrade user to free
+        if (customerId) {
+          const { data: user } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('stripe_customer_id', customerId)
+            .single()
+
+          if (user) {
+            await supabase
+              .from('profiles')
+              .update({
+                subscription_status: 'free',
+                stripe_subscription_id: null,
+                subscription_end: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', user.id)
+
+            console.log(`User ${user.id} subscription canceled, reverted to free`)
+          }
+        }
+        break
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object
+        const customerId = invoice.customer as string
+
+        // Optionally notify user of payment failure
+        console.log(`Payment failed for customer ${customerId}`)
+        break
+      }
+
+      default:
+        console.log(`Unhandled event type: ${event.type}`)
     }
 
-    case 'invoice.payment_failed': {
-      const invoice = event.data.object
-      const customerId = invoice.customer
-      
-      // Could send email notification here
-      console.log(`Payment failed for customer ${customerId}`)
-      break
-    }
-
-    default:
-      console.log(`Unhandled event type: ${event.type}`)
+    return res.status(200).json({ received: true })
+  } catch (error: any) {
+    console.error('Webhook handler error:', error)
+    return res.status(500).json({ error: error.message || 'Webhook handler failed' })
   }
+}
 
-  return res.status(200).json({ received: true })
+// Disable body parsing for webhook signature verification
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 }
