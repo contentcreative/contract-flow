@@ -185,7 +185,7 @@ Explore more: https://contract-flow.app/dashboard
       </ul>
       
       <p style="text-align: center; margin: 30px 0;">
-        <a href="https://contract-flow.app/dashboard?upgrade=true" style="display: inline-block; background: #f59e0b; color: white; padding: 18px 36px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 18px;">Upgrade Now - Only £7.20/mo</a>
+        <a href="https://contract-flow.app/dashboard?upgrade=true" style="display: inline-block; background: #f59e0b; color: white; padding: 18px 36px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 18px;">Upgrade Now - Only £9.60/mo</a>
       </p>
       
       <p style="text-align: center; color: #dc2626; font-weight: bold;">
@@ -200,7 +200,7 @@ Hi ${name || 'there'}!
 
 🎁 Special Offer: 20% OFF Pro!
 
-Upgrade to Pro for just £7.20/month (normally £9):
+Upgrade to Pro for just £9.60/month (normally £12):
 
 ✓ Unlimited contracts
 ✓ AI-powered generation
