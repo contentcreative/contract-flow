@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { FileText, CreditCard, Settings, LogOut, Check, User, Crown, X, Save, Trash2, Eye } from 'lucide-react'
+import { FileText, CreditCard, Settings, LogOut, Check, User, Crown, X, Save, Trash2, Eye, Pen } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 type Profile = {
