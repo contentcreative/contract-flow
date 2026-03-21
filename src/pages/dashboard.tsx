@@ -170,7 +170,7 @@ export default function Dashboard() {
       if (data.success) {
         alert('Signature request sent to ' + email + '!')
         // Refresh contract data
-        setSelectedContract(prev => prev ? { ...prev, signature_status: 'awaiting_signature' } : null)
+        setSelectedContract((prev: any) => prev ? { ...prev, signature_status: 'awaiting_signature' } : null)
       } else {
         alert('Error: ' + (data.error || 'Failed to send signature request'))
       }
