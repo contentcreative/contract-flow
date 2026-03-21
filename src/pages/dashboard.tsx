@@ -213,6 +213,9 @@ export default function Dashboard() {
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <Link href="/" className="font-bold text-xl">ContractFlow</Link>
             <div className="flex items-center gap-4">
+              <Link href="/affiliate" className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center gap-1">
+                <DollarSign className="w-4 h-4" /> Earn Money
+              </Link>
               <button onClick={() => setShowSettingsModal(true)} className="text-gray-400 hover:text-gray-600">
                 <Settings className="w-5 h-5" />
               </button>
