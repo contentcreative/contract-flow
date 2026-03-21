@@ -38,16 +38,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .update({ status: 'opened' })
       .eq('id', id)
 
-    // Record in stats
+    // Record in stats (upsert to avoid duplicates)
     await supabase
       .from('email_stats')
-      .insert({
+      .upsert({
         user_id: email.user_id,
         email_type: email.email_type,
         opened: true,
         opened_at: new Date().toISOString()
-      })
-      .onConflictDoNothing()
+      }, { onConflict: 'user_id, email_type' })
 
     // Return 1x1 transparent GIF
     return res.setHeader('Content-Type', 'image/gif').send(Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'))
