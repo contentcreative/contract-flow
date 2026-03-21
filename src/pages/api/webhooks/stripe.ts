@@ -1,7 +1,28 @@
 // API: Stripe Webhook Handler
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { constructEvent, stripe } from '@/lib/stripe'
-import { supabase } from '@/lib/supabase'
+import { stripe } from '@/lib/stripe'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+)
+
+// Buffer raw body for webhook signature verification
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+async function getRawBody(req: NextApiRequest): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    let data: Buffer[] = []
+    req.on('data', (chunk: Buffer) => data.push(chunk))
+    req.on('end', () => resolve(Buffer.concat(data)))
+    req.on('error', reject)
+  })
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,13 +39,16 @@ export default async function handler(
     return res.status(400).json({ error: 'Missing signature or webhook secret' })
   }
 
+  // Get raw body for signature verification
+  const rawBody = await getRawBody(req)
+
   let event
 
   try {
-    event = constructEvent(req.body, signature, webhookSecret)
+    event = stripe.webhooks.constructEvent(rawBody.toString(), signature, webhookSecret)
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message)
-    return res.status(400).json({ error: 'Invalid signature' })
+    return res.status(400).json({ error: `Webhook Error: ${err.message}` })
   }
 
   try {
@@ -64,7 +88,6 @@ export default async function handler(
         const customerId = subscription.customer as string
         const status = subscription.status
 
-        // Update user's subscription status
         if (customerId) {
           const { data: user } = await supabase
             .from('profiles')
@@ -89,7 +112,6 @@ export default async function handler(
         const subscription = event.data.object
         const customerId = subscription.customer as string
 
-        // Downgrade user to free
         if (customerId) {
           const { data: user } = await supabase
             .from('profiles')
@@ -117,8 +139,6 @@ export default async function handler(
       case 'invoice.payment_failed': {
         const invoice = event.data.object
         const customerId = invoice.customer as string
-
-        // Optionally notify user of payment failure
         console.log(`Payment failed for customer ${customerId}`)
         break
       }
@@ -132,11 +152,4 @@ export default async function handler(
     console.error('Webhook handler error:', error)
     return res.status(500).json({ error: error.message || 'Webhook handler failed' })
   }
-}
-
-// Disable body parsing for webhook signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
 }
