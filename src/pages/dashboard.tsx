@@ -137,11 +137,18 @@ export default function Dashboard() {
     if (!user) return
     setCheckingOut(true)
     
-    // Price IDs for each currency
+    // Price IDs for each currency (new pricing: £12/€14/$15 monthly)
     const priceIds: Record<string, string> = {
-      GBP: 'price_1TCjOh6xVWAQY92bSZOQbedh',  // £9 GBP
-      USD: 'price_1TCjOR6xVWAQY92bUtS2fpJm',  // $9 USD
-      EUR: 'price_1TCjP06xVWAQY92bg7MQgWER'   // €9 EUR
+      GBP: 'price_1TDQSO6xVWAQY92b0nIT94Wt',  // £12 GBP
+      USD: 'price_1TDQSd6xVWAQY92bhZXKzjfV',  // $15 USD
+      EUR: 'price_1TDQSu6xVWAQY92btFfaE50e'   // €14 EUR
+    }
+    
+    // Pricing display
+    const prices: Record<string, { monthly: number; annual: number }> = {
+      GBP: { monthly: 12, annual: 120 },
+      USD: { monthly: 15, annual: 150 },
+      EUR: { monthly: 14, annual: 140 }
     }
     
     try {
@@ -293,7 +300,7 @@ export default function Dashboard() {
                   <p className="text-blue-100 text-sm">Unlimited contracts, AI customization, priority support</p>
                 </div>
                 <button onClick={() => setShowUpgradeModal(true)} className="px-6 py-3 bg-white text-blue-600 rounded-xl font-medium hover:bg-blue-50">
-                  Upgrade — {selectedCurrency === 'GBP' ? '£9' : selectedCurrency === 'USD' ? '$9' : '€9'}/mo
+                  Upgrade — {selectedCurrency === 'GBP' ? '£12' : selectedCurrency === 'USD' ? '$15' : '€14'}/mo
                 </button>
               </div>
             </div>
@@ -472,7 +479,7 @@ export default function Dashboard() {
                     ))}
                   </div>
                   <p className="text-xs text-gray-400 mt-2">
-                    {selectedCurrency === 'GBP' ? '£9/mo' : selectedCurrency === 'USD' ? '$9/mo' : '€9/mo'}
+                    {selectedCurrency === 'GBP' ? '£12/mo' : selectedCurrency === 'USD' ? '$15/mo' : '€14/mo'}
                   </p>
                 </div>
 
@@ -481,7 +488,7 @@ export default function Dashboard() {
                   <label className="text-sm text-gray-500">Current Plan</label>
                   <div className="font-medium flex items-center gap-2 mt-1">
                     {plan === 'pro' ? <Crown className="w-4 h-4 text-purple-600" /> : <User className="w-4 h-4 text-gray-600" />}
-                    {plan === 'pro' ? `Pro - ${selectedCurrency === 'GBP' ? '£9' : selectedCurrency === 'USD' ? '$9' : '€9'}/mo` : 'Free - 2 contracts/mo'}
+                    {plan === 'pro' ? `Pro - ${selectedCurrency === 'GBP' ? '£12' : selectedCurrency === 'USD' ? '$15' : '€14'}/mo` : 'Free - 2 contracts/mo'}
                   </div>
                   {plan === 'pro' && (
                     <button className="mt-3 w-full p-3 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 text-sm">
