@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { sendSignatureRequest } from '@/lib/email'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -17,8 +18,15 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
+    // Get contract details
+    const { data: contract } = await supabase
+      .from('contracts')
+      .select('title, user_id')
+      .eq('id', contract_id)
+      .single()
+
     // Create signature request
-    const { data, error } = await supabase.from('signature_requests').insert({
+    const { data: sigRequest, error } = await supabase.from('signature_requests').insert({
       contract_id,
       signer_email,
       signer_name,
@@ -29,12 +37,26 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: error.message })
     }
 
-    // Generate signature URL (in production, send email with this link)
-    const signatureUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://contract-flow-six.vercel.app'}/sign/${data.id}`
+    // Generate signature URL
+    const signatureUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://contract-flow.app'}/sign/${sigRequest.id}`
+
+    // Send signature request email
+    await sendSignatureRequest({
+      to: signer_email,
+      recipientName: signer_name,
+      contractTitle: contract?.title || 'Contract',
+      signatureUrl,
+    })
+
+    // Update contract status
+    await supabase
+      .from('contracts')
+      .update({ signature_status: 'awaiting_signature' })
+      .eq('id', contract_id)
 
     return res.status(200).json({ 
       success: true, 
-      data,
+      data: sigRequest,
       signature_url: signatureUrl
     })
   } catch (error: any) {
