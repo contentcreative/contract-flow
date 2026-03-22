@@ -42,7 +42,7 @@ export default function OfferPage() {
               Get <span className="text-blue-600">5 Professional Contract Templates</span> + <span className="text-green-600">7-Day Pro Trial</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Start creating legally sound contracts in minutes. Perfect for freelancers, consultants, and agencies who want to close deals faster and look more professional.
+              Start creating legally sound contracts in minutes. Perfect for freelancers, consultants, and agencies who want to close deals faster, look more professional, and get paid with built-in invoicing.
             </p>
             <div className="flex justify-center gap-4">
               <Link
@@ -96,7 +96,7 @@ export default function OfferPage() {
                   </div>
                 </div>
                 <ul className="space-y-3">
-                  {['Unlimited AI contract generation', 'Google Docs export', 'E-signature workflow', 'Priority support', 'Analytics dashboard'].map((feature, i) => (
+                  {['Unlimited AI contract generation', '5 invoices per month', 'Google Docs export', 'E-signature workflow', 'Priority support', 'Analytics dashboard'].map((feature, i) => (
                     <li key={i} className="flex items-center gap-2">
                       <Check className="w-5 h-5 text-green-500" />
                       <span>{feature}</span>
@@ -160,6 +160,12 @@ export default function OfferPage() {
                     <td className="text-center py-4 font-bold">5+ included</td>
                     <td className="text-center py-4">Limited</td>
                     <td className="text-center py-4">Limited</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-4">Invoicing</td>
+                    <td className="text-center py-4 font-bold">5 invoices/month</td>
+                    <td className="text-center py-4"><Check className="w-5 h-5 text-green-500 inline" /></td>
+                    <td className="text-center py-4"><Check className="w-5 h-5 text-green-500 inline" /></td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-4">AI Generation</td>
