@@ -21,8 +21,8 @@ export default function Pricing() {
   const currentPrice = prices[billing][currency]
 
   const features = [
-    { name: 'AI Contract Generation', icon: Zap, free: '5 contracts', pro: 'Unlimited', agency: 'Unlimited' },
-    { name: 'Contract Templates', icon: FileText, free: '10 templates', pro: 'All templates', agency: 'All templates' },
+    { name: 'AI Contract Generation', icon: Zap, free: '2 contracts/month', pro: 'Unlimited', agency: 'Unlimited' },
+    { name: 'Contract Templates', icon: FileText, free: '5 contract types', pro: 'All templates', agency: 'All templates' },
     { name: 'Invoicing', icon: CreditCard, free: '2 invoices/mo', pro: '5 invoices/mo', agency: 'Unlimited' },
     { name: 'Affiliate Program', icon: Users, free: false, pro: true, agency: true },
     { name: 'Email Drip Campaigns', icon: Mail, free: false, pro: true, agency: true },

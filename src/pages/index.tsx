@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import { Check, FileText, Shield, Zap, ArrowRight, Menu, X, Globe } from 'lucide-react'
 
 type Currency = 'GBP' | 'EUR' | 'USD'
@@ -22,8 +23,6 @@ const COUNTRY_CURRENCY: Record<string, Currency> = {
 }
 
 export default function Home() {
-  const [showModal, setShowModal] = useState(false)
-  const [modalPlan, setModalPlan] = useState<'starter' | 'pro'>('starter')
   const [currency, setCurrency] = useState<Currency>('GBP')
   const [detecting, setDetecting] = useState(true)
 
@@ -52,11 +51,6 @@ export default function Home() {
     }
     detectCurrency()
   }, [])
-
-  const openModal = (plan: 'starter' | 'pro') => {
-    setModalPlan(plan)
-    setShowModal(true)
-  }
 
   const price = PRICING[currency]
 
@@ -110,12 +104,12 @@ export default function Home() {
             AI-powered contract generation for freelancers and consultants. Plain language. Legally sound. Ready to sign.
           </p>
           <div className="flex justify-center gap-4">
-            <button onClick={() => openModal('pro')} className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 flex items-center gap-2">
+            <Link href="/generate" className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 flex items-center gap-2">
               Generate My First Contract <ArrowRight className="w-5 h-5" />
-            </button>
-            <button onClick={() => openModal('starter')} className="border border-gray-300 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50">
+            </Link>
+            <Link href="/generate" className="border border-gray-300 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50">
               Start Free
-            </button>
+            </Link>
           </div>
           <p className="mt-4 text-sm text-gray-500">2 free contracts • No credit card required</p>
         </div>
@@ -169,9 +163,9 @@ export default function Home() {
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> PDF export</li>
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> Basic customization</li>
               </ul>
-              <button onClick={() => openModal('starter')} className="w-full py-3 border border-gray-300 rounded-xl font-medium hover:bg-gray-50">
+              <Link href="/generate" className="w-full py-3 border border-gray-300 rounded-xl font-medium hover:bg-gray-50 text-center block">
                 Get Started Free
-              </button>
+              </Link>
             </div>
 
             {/* Professional */}
@@ -190,9 +184,9 @@ export default function Home() {
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> E-signature workflow</li>
                 <li className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" /> Priority support</li>
               </ul>
-              <button onClick={() => openModal('pro')} className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">
+              <Link href="/generate" className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 text-center block">
                 Start Free Trial
-              </button>
+              </Link>
               <p className="mt-3 text-xs text-center text-gray-500">7-day free trial • No credit card required</p>
             </div>
           </div>
