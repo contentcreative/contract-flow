@@ -63,15 +63,21 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        // Check if user already exists by querying the profiles table
+        // Check if user already exists - try both profiles and cf_users tables
         const { data: existingProfile, error: profileError } = await supabase
           .from('profiles')
           .select('id')
           .eq('email', email)
           .single()
 
-        // If we find a profile, email already exists
-        if (!profileError && existingProfile) {
+        const { data: existingCfUser, error: cfUserError } = await supabase
+          .from('cf_users')
+          .select('id')
+          .eq('email', email)
+          .single()
+
+        // If we find a profile or cf_user, email already exists
+        if ((!profileError && existingProfile) || (!cfUserError && existingCfUser)) {
           setError('An account with this email already exists. Please sign in instead.')
           setIsSignUp(false)
           setLoading(false)
