@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Check, FileText, CreditCard, Users, TrendingUp, Mail, Zap, Shield, Globe } from 'lucide-react'
+import { Check, FileText, CreditCard, Users, TrendingUp, Mail, Zap, Shield, Globe, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 type Currency = 'GBP' | 'EUR' | 'USD'
@@ -23,7 +23,7 @@ export default function Pricing() {
   const features = [
     { name: 'AI Contract Generation', icon: Zap, free: '1 contract/month', pro: 'Unlimited', agency: 'Unlimited' },
     { name: 'Contract Templates', icon: FileText, free: '3 contract types', pro: '10+ templates', agency: '10+ templates' },
-    { name: 'Invoicing', icon: CreditCard, free: '2 invoices/mo', pro: '5 invoices/mo', agency: 'Unlimited' },
+    { name: 'Invoicing', icon: CreditCard, free: false, pro: '5 invoices/mo', agency: 'Unlimited' },
     { name: 'Affiliate Program', icon: Users, free: false, pro: true, agency: true },
     { name: 'Email Drip Campaigns', icon: Mail, free: false, pro: true, agency: true },
     { name: 'Analytics Dashboard', icon: TrendingUp, free: false, pro: true, agency: true },
@@ -136,9 +136,17 @@ export default function Pricing() {
                 <ul className="space-y-4 mb-8">
                   {features.map((feature) => (
                     <li key={feature.name} className="flex items-start gap-3">
-                      <Check className={`w-5 h-5 flex-shrink-0 ${feature.free ? 'text-green-500' : 'text-gray-300'}`} />
-                      <span className={feature.free ? 'text-gray-700' : 'text-gray-400'}>
-                        <span className="font-medium">{typeof feature.free === 'string' ? feature.free : 'Included'}</span>
+                      {typeof feature.free === 'string' ? (
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : feature.free ? (
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      )}
+                      <span className={typeof feature.free === 'string' ? 'text-gray-700' : (feature.free ? 'text-gray-700' : 'text-gray-400')}>
+                        <span className="font-medium">
+                          {typeof feature.free === 'string' ? feature.free : (feature.free ? 'Included' : 'Not included')}
+                        </span>
                         <span className="text-gray-500"> {feature.name.toLowerCase()}</span>
                       </span>
                     </li>
@@ -177,9 +185,17 @@ export default function Pricing() {
                 <ul className="space-y-4 mb-8">
                   {features.map((feature) => (
                     <li key={feature.name} className="flex items-start gap-3">
-                      <Check className={`w-5 h-5 flex-shrink-0 ${feature.pro ? 'text-green-500' : 'text-gray-300'}`} />
-                      <span className={feature.pro ? 'text-gray-700' : 'text-gray-400'}>
-                        <span className="font-medium">{typeof feature.pro === 'string' ? feature.pro : 'Included'}</span>
+                      {typeof feature.pro === 'string' ? (
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : feature.pro ? (
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      )}
+                      <span className={typeof feature.pro === 'string' ? 'text-gray-700' : (feature.pro ? 'text-gray-700' : 'text-gray-400')}>
+                        <span className="font-medium">
+                          {typeof feature.pro === 'string' ? feature.pro : (feature.pro ? 'Included' : 'Not included')}
+                        </span>
                         <span className="text-gray-500"> {feature.name.toLowerCase()}</span>
                       </span>
                     </li>
@@ -210,9 +226,17 @@ export default function Pricing() {
                 <ul className="space-y-4 mb-8">
                   {features.map((feature) => (
                     <li key={feature.name} className="flex items-start gap-3">
-                      <Check className={`w-5 h-5 flex-shrink-0 ${feature.agency ? 'text-green-500' : 'text-gray-300'}`} />
-                      <span className={feature.agency ? 'text-gray-700' : 'text-gray-400'}>
-                        <span className="font-medium">{typeof feature.agency === 'string' ? feature.agency : 'Included'}</span>
+                      {typeof feature.agency === 'string' ? (
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : feature.agency ? (
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      )}
+                      <span className={typeof feature.agency === 'string' ? 'text-gray-700' : (feature.agency ? 'text-gray-700' : 'text-gray-400')}>
+                        <span className="font-medium">
+                          {typeof feature.agency === 'string' ? feature.agency : (feature.agency ? 'Included' : 'Not included')}
+                        </span>
                         <span className="text-gray-500"> {feature.name.toLowerCase()}</span>
                       </span>
                     </li>
