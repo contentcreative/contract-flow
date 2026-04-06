@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Check, FileText, Shield, Zap, ArrowRight, Menu, X, Globe } from 'lucide-react'
+import Image from 'next/image'
+import { Check, FileText, Shield, Zap, ArrowRight, Globe } from 'lucide-react'
 
 type Currency = 'GBP' | 'EUR' | 'USD'
 
@@ -65,7 +66,10 @@ export default function Home() {
       {/* Navigation */}
       <nav className="border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="font-bold text-xl">ContractFlow</div>
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.svg" alt="ContractFlow" width={32} height={32} />
+            <span className="font-bold text-xl">ContractFlow</span>
+          </Link>
           <div className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-gray-600 hover:text-gray-900">Features</a>
             <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
@@ -221,7 +225,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="font-bold">ContractFlow</div>
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.svg" alt="ContractFlow" width={24} height={24} />
+            <span className="font-bold">ContractFlow</span>
+          </Link>
           <p className="text-sm text-gray-500">© 2024 ContractFlow. All rights reserved.</p>
         </div>
       </footer>

@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Check, FileText, CreditCard, Users, TrendingUp, Mail, Zap, Shield, Globe, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -48,8 +49,9 @@ export default function Pricing() {
         {/* Header */}
         <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold text-gray-900">
-              ContractFlow
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.svg" alt="ContractFlow" width={32} height={32} />
+              <span className="text-xl font-bold text-gray-900">ContractFlow</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/templates" className="text-gray-600 hover:text-gray-900">Templates</Link>

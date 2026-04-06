@@ -1,21 +1,23 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Check, Zap, FileText, Shield, Users, Clock, ArrowRight } from 'lucide-react'
 
 export default function OfferPage() {
   return (
     <>
       <Head>
-        <title>Limited Offer: 10+ Contract Templates + 7-Day Pro Trial | ContractFlow</title>
-        <meta name="description" content="Get 10+ professional contract templates and a 7-day free trial of ContractFlow Pro. No credit card required. Start creating legally sound contracts in minutes." />
+        <title>Limited Offer: 1 Free Contract + 7-Day Pro Trial | ContractFlow</title>
+        <meta name="description" content="Get 1 free contract/month and a 7-day free trial of ContractFlow Pro. No credit card required. Start creating legally sound contracts in minutes." />
       </Head>
 
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         {/* Header */}
         <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold text-gray-900">
-              ContractFlow
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.svg" alt="ContractFlow" width={32} height={32} />
+              <span className="text-xl font-bold text-gray-900">ContractFlow</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/templates" className="text-gray-600 hover:text-gray-900">Templates</Link>
@@ -212,6 +214,10 @@ export default function OfferPage() {
         {/* Footer */}
         <footer className="border-t py-8 mt-16">
           <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <Link href="/" className="inline-flex items-center gap-2 mb-2">
+              <Image src="/logo.svg" alt="ContractFlow" width={20} height={20} />
+              <span className="font-bold text-gray-700">ContractFlow</span>
+            </Link>
             <p>© 2026 ContractFlow. All rights reserved. | <Link href="/pricing" className="text-blue-600 hover:underline">View all plans</Link></p>
           </div>
         </footer>
