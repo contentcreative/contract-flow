@@ -3,28 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ContractFlow — AI-Powered Contracts for Freelancers</title>
+    <title>ContractFlow - AI-Powered Contracts for Freelancers</title>
     <meta name="description" content="Generate professional contracts in minutes, not hours. AI-powered contract automation for freelancers and consultants.">
+    <link rel="icon" href="nextjs/public/favicon.svg" type="image/svg+xml">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; }
         .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        
+
+        /* Header/Logo */
+        header { padding: 20px 0; text-align: center; border-bottom: 1px solid #eee; }
+        .logo { display: inline-flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; color: #111; text-decoration: none; }
+        .logo svg { width: 36px; height: 36px; }
+
         /* Hero */
-        .hero { padding: 80px 0 60px; text-align: center; }
+        .hero { padding: 60px 0 60px; text-align: center; }
         .hero h1 { font-size: 48px; font-weight: 700; margin-bottom: 16px; color: #111; }
         .hero p { font-size: 20px; color: #666; max-width: 600px; margin: 0 auto 32px; }
         .cta-button { display: inline-block; background: #2563eb; color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 18px; transition: background 0.2s; }
         .cta-button:hover { background: #1d4ed8; }
         .sub-cta { display: block; margin-top: 12px; color: #666; font-size: 14px; text-decoration: underline; cursor: pointer; }
-        
+
         /* Problem */
         .problem { background: #f8fafc; padding: 60px 0; }
         .problem h2 { text-align: center; font-size: 32px; margin-bottom: 40px; }
         .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
         .pain-card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .pain-card h3 { font-size: 18px; margin-bottom: 8px; color: #dc2626; }
-        
+
         /* Solution */
         .solution { padding: 60px 0; }
         .solution h2 { text-align: center; font-size: 32px; margin-bottom: 40px; }
@@ -33,7 +39,7 @@
         .feature-icon { width: 40px; height: 40px; background: #dcfce7; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .feature-text h3 { font-size: 18px; margin-bottom: 4px; }
         .feature-text p { color: #666; }
-        
+
         /* Pricing */
         .pricing { background: #f8fafc; padding: 60px 0; }
         .pricing h2 { text-align: center; font-size: 32px; margin-bottom: 40px; }
@@ -50,18 +56,18 @@
         .price-button { display: block; width: 100%; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: 600; }
         .free .price-button { background: #f1f5f9; color: #333; }
         .pro .price-button { background: #2563eb; color: white; }
-        
+
         /* FAQ */
         .faq { padding: 60px 0; max-width: 700px; margin: 0 auto; }
         .faq h2 { text-align: center; font-size: 32px; margin-bottom: 40px; }
         .faq-item { margin-bottom: 24px; }
         .faq-item h3 { font-size: 18px; margin-bottom: 8px; }
         .faq-item p { color: #666; }
-        
+
         /* Footer */
         footer { background: #1a1a1a; color: #999; padding: 40px 0; text-align: center; }
         footer a { color: #999; text-decoration: none; }
-        
+
         /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
         .modal.active { display: flex; }
@@ -75,6 +81,24 @@
     </style>
 </head>
 <body>
+    <!-- Logo Header -->
+    <header style="padding: 20px 0; text-align: center; border-bottom: 1px solid #eee;">
+        <a href="/" class="logo" style="display: inline-flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; color: #111; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" style="width: 36px; height: 36px;">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M100 80 L340 80 C373.3 80 400 106.7 400 140 L400 372 C400 405.3 373.3 432 340 432 L100 432 C66.7 432 40 405.3 40 372 L40 140 C40 106.7 66.7 80 100 80 Z" fill="url(#logoGrad)"/>
+                <path d="M115 100 L325 100 C347.1 100 365 117.9 365 140 L365 357 C365 379.1 347.1 397 325 397 L115 397 C92.9 397 75 379.1 75 357 L75 140 C75 117.9 92.9 100 115 100 Z" fill="white"/>
+                <path d="M155 248 L215 308 L345 178" stroke="url(#logoGrad)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            ContractFlow
+        </a>
+    </header>
+
     <section class="hero">
         <div class="container">
             <h1>Professional Contracts in Minutes, Not Hours</h1>
@@ -196,11 +220,25 @@
     </section>
 
     <footer>
-        <div class="container">
+        <div class="container" style="text-align: center;">
+            <a href="/" class="logo" style="display: inline-flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; color: #111; text-decoration: none; margin-bottom: 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" style="width: 28px; height: 28px;">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M100 80 L340 80 C373.3 80 400 106.7 400 140 L400 372 C400 405.3 373.3 432 340 432 L100 432 C66.7 432 40 405.3 40 372 L40 140 C40 106.7 66.7 80 100 80 Z" fill="url(#logoGrad)"/>
+                    <path d="M115 100 L325 100 C347.1 100 365 117.9 365 140 L365 357 C365 379.1 347.1 397 325 397 L115 397 C92.9 397 75 379.1 75 357 L75 140 C75 117.9 92.9 100 115 100 Z" fill="white"/>
+                    <path d="M155 248 L215 308 L345 178" stroke="url(#logoGrad)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                ContractFlow
+            </a>
             <p>© 2026 ContractFlow. All rights reserved.</p>
             <p style="margin-top: 8px;">
-                <a href="#">Privacy</a>  |  
-                <a href="#">Terms</a>  |  
+                <a href="#">Privacy</a>  |  
+                <a href="#">Terms</a>  |  
                 <a href="#">Contact</a>
             </p>
         </div>
@@ -250,7 +288,7 @@
             e.preventDefault();
             const email = document.getElementById('email').value;
             const plan = document.getElementById('plan').value;
-            
+
             // Simulate signup - in production, this would call an API
             alert('Thanks for signing up! Check your email to verify your account.\n\nPlan: ' + plan.toUpperCase());
             closeModal();
