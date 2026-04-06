@@ -173,34 +173,45 @@ export default function Login() {
             <h1 className="text-2xl font-bold mb-6">{isSignUp ? 'Create your account' : 'Welcome back'}</h1>
             {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm">{error}</div>}
             <form onSubmit={handleSubmit}>
+              {/* Email & Password FIRST - for duplicate detection */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Email Address</label>
+                <input type="email" className="w-full px-4 py-3 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
+              </div>
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-2">Password</label>
+                <input type="password" className="w-full px-4 py-3 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
+              </div>
+
               {isSignUp && (
                 <>
+                  {/* Rest of registration fields after email/password */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Full Name</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                      value={fullName} 
-                      onChange={(e) => setFullName(e.target.value)} 
-                      placeholder="John Smith" 
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="John Smith"
                       required={isSignUp}
                     />
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Company Name <span className="text-gray-400 text-xs">(optional)</span></label>
-                    <input 
-                      type="text" 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                      value={companyName} 
-                      onChange={(e) => setCompanyName(e.target.value)} 
-                      placeholder="Acme Ltd" 
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="Acme Ltd"
                     />
                   </div>
-                  
+
                   {/* Phase 1: Extended Registration Fields */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Industry <span className="text-red-500">*</span></label>
-                    <select 
+                    <select
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white"
                       value={industry}
                       onChange={(e) => setIndustry(e.target.value)}
@@ -212,10 +223,10 @@ export default function Login() {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Business Type <span className="text-red-500">*</span></label>
-                    <select 
+                    <select
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white"
                       value={businessType}
                       onChange={(e) => setBusinessType(e.target.value)}
@@ -227,32 +238,32 @@ export default function Login() {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Business Address</label>
-                    <textarea 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                    <textarea
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl"
                       value={businessAddress}
                       onChange={(e) => setBusinessAddress(e.target.value)}
                       placeholder="123 High Street, London, SW1A 1AA"
                       rows={2}
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">VAT Number <span className="text-gray-400 text-xs">(if registered)</span></label>
-                    <input 
-                      type="text" 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl"
                       value={vatNumber}
                       onChange={(e) => setVatNumber(e.target.value)}
-                      placeholder="GB123456789" 
+                      placeholder="GB123456789"
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Primary Goal <span className="text-red-500">*</span></label>
-                    <select 
+                    <select
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white"
                       value={primaryGoal}
                       onChange={(e) => setPrimaryGoal(e.target.value)}
@@ -266,14 +277,6 @@ export default function Login() {
                   </div>
                 </>
               )}
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Email Address</label>
-                <input type="email" className="w-full px-4 py-3 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
-              </div>
-              <div className="mb-6">
-                <label className="block text-sm font-medium mb-2">Password</label>
-                <input type="password" className="w-full px-4 py-3 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
-              </div>
               <button type="submit" disabled={loading} className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50">
                 {loading ? 'Please wait...' : (isSignUp ? 'Create Account' : 'Sign In')}
               </button>
