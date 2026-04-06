@@ -64,13 +64,14 @@ export default function Login() {
     try {
       if (isSignUp) {
         // Check if user already exists by querying the profiles table
-        const { data: existingProfile } = await supabase
+        const { data: existingProfile, error: profileError } = await supabase
           .from('profiles')
           .select('id')
           .eq('email', email)
           .single()
 
-        if (existingProfile) {
+        // If we find a profile, email already exists
+        if (!profileError && existingProfile) {
           setError('An account with this email already exists. Please sign in instead.')
           setIsSignUp(false)
           setLoading(false)
