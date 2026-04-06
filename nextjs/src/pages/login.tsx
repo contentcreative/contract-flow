@@ -63,9 +63,23 @@ export default function Login() {
 
     try {
       if (isSignUp) {
+        // Check if user already exists by querying the profiles table
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .single()
+
+        if (existingProfile) {
+          setError('An account with this email already exists. Please sign in instead.')
+          setIsSignUp(false)
+          setLoading(false)
+          return
+        }
+
         // Sign up the user
-        const { data, error } = await supabase.auth.signUp({ 
-          email, 
+        const { data, error } = await supabase.auth.signUp({
+          email,
           password,
           options: {
             data: {
@@ -77,7 +91,7 @@ export default function Login() {
             }
           }
         })
-        
+
         if (error) throw error
         
         // Create profile record with extended fields
