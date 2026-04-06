@@ -14,8 +14,8 @@ export default function Pricing() {
   const currencySymbol = currencySymbols[currency]
 
   const prices = {
-    monthly: { GBP: 12, EUR: 14, USD: 15 },
-    annual: { GBP: 120, EUR: 140, USD: 150 }
+    monthly: { GBP: 9, EUR: 10, USD: 12 },
+    annual: { GBP: 90, EUR: 100, USD: 120 }
   }
 
   const currentPrice = prices[billing][currency]
@@ -256,7 +256,7 @@ export default function Pricing() {
                   </tr>
                   <tr className="border-b">
                     <td className="py-4">Invoicing</td>
-                    <td className="text-center py-4">5 invoices included</td>
+                    <td className="text-center py-4"><Check className="w-5 h-5 text-green-500 inline" /> 5 invoices</td>
                     <td className="text-center py-4"><Check className="w-5 h-5 text-green-500 inline" /></td>
                     <td className="text-center py-4"><Check className="w-5 h-5 text-green-500 inline" /></td>
                   </tr>
