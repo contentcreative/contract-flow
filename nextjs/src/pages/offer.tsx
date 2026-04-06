@@ -39,7 +39,7 @@ export default function OfferPage() {
               <Zap className="w-4 h-4" /> Limited Time Offer
             </div>
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Get <span className="text-blue-600">10+ Professional Contract Templates</span> + <span className="text-green-600">7-Day Pro Trial</span>
+              Get <span className="text-blue-600">1 Free Contract/Month</span> + <span className="text-green-600">7-Day Pro Trial</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
               Start creating legally sound contracts in minutes. Perfect for freelancers, consultants, and agencies who want to close deals faster, look more professional, and get paid with built-in invoicing.
@@ -71,18 +71,19 @@ export default function OfferPage() {
                     <FileText className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">10+ Contract Templates</h3>
+                    <h3 className="font-bold text-lg">3 Contract Templates</h3>
                     <p className="text-gray-600 text-sm">Professionally drafted, ready to use</p>
                   </div>
                 </div>
                 <ul className="space-y-3">
-                  {['Master Service Agreement (MSA)', 'Statement of Work (SOW)', 'Non-Disclosure Agreement (NDA)', 'Independent Contractor Agreement', 'Consulting Agreement', 'Freelance Agreement', 'Fixed Price Agreement', 'Retainer Agreement', 'Quote Template', 'Invoice Template'].map((template, i) => (
+                  {['Master Service Agreement (MSA)', 'Statement of Work (SOW)', 'Non-Disclosure Agreement (NDA)'].map((template, i) => (
                     <li key={i} className="flex items-center gap-2">
                       <Check className="w-5 h-5 text-green-500" />
                       <span>{template}</span>
                     </li>
                   ))}
                 </ul>
+                <p className="mt-4 text-sm text-gray-500 italic">Upgrade to Pro for 10+ templates</p>
               </div>
 
               <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -123,7 +124,7 @@ export default function OfferPage() {
                   <span className="text-2xl font-bold text-purple-600">2</span>
                 </div>
                 <h3 className="font-bold text-lg mb-2">Choose Your Template</h3>
-                <p className="text-gray-600">Pick from 10+ professional contract types and customize with AI.</p>
+                <p className="text-gray-600">Pick from 3 professional contract types and customize with AI.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -151,13 +152,13 @@ export default function OfferPage() {
                 <tbody>
                   <tr className="border-b">
                     <td className="py-4 font-medium">Price</td>
-                    <td className="text-center py-4 font-bold text-green-600">£9/mo</td>
+                    <td className="text-center py-4 font-bold text-green-600">£0/mo</td>
                     <td className="text-center py-4 text-gray-600">$49/mo</td>
                     <td className="text-center py-4 text-gray-600">$49/mo</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-4">Contract Templates</td>
-                    <td className="text-center py-4 font-bold">10+ included</td>
+                    <td className="text-center py-4 font-bold">3 (free) / 10+ (Pro)</td>
                     <td className="text-center py-4">Limited</td>
                     <td className="text-center py-4">Limited</td>
                   </tr>
