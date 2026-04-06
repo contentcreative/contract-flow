@@ -54,6 +54,7 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [verificationSent, setVerificationSent] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -102,7 +103,10 @@ export default function Login() {
           }
         }
         
-        router.push('/dashboard')
+        // Show verification message instead of redirecting
+        setVerificationSent(true)
+        setLoading(false)
+        return
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
@@ -126,6 +130,31 @@ export default function Login() {
             <Link href="/" className="font-bold text-2xl">ContractFlow</Link>
             <p className="text-gray-600 mt-2">AI contracts for freelancers</p>
           </div>
+
+          {/* Verification email sent message */}
+          {verificationSent && (
+            <div className="bg-green-50 border border-green-200 p-8 rounded-2xl mb-6 text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-green-800 mb-2">Check your email</h2>
+              <p className="text-green-700 mb-4">
+                We've sent a verification email to <strong>{email}</strong>
+              </p>
+              <p className="text-sm text-green-600 mb-4">
+                Click the link in the email to verify your account, then sign in.
+              </p>
+              <p className="text-xs text-green-500">
+                Didn't receive the email? Check your spam folder or{' '}
+                <button onClick={() => setVerificationSent(false)} className="underline hover:text-green-700">
+                  try again
+                </button>
+              </p>
+            </div>
+          )}
+
           <div className="bg-white p-8 rounded-2xl shadow-sm">
             <h1 className="text-2xl font-bold mb-6">{isSignUp ? 'Create your account' : 'Welcome back'}</h1>
             {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm">{error}</div>}
